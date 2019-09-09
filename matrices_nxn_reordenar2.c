@@ -117,7 +117,7 @@ int main() {
 		}
        j=0; 
 	}
-    for (f=1; f<=n; f++){	//Impresion Matriz(2)
+    for (f=1; f<=n; f++){	//Impresion Matriz(4)
 		for (c=1; c<=n; c++){
 			printf("%i \t",A[f][c]);
 		}
