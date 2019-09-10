@@ -19,7 +19,6 @@ int main(){
         printf("Error de Lectura");
     } 
     else {
-
     //Recorrer archivo hasta fin de columna del array(\n) después salta la siguiente linea hasta EOF (NULL)
     i = 1;count=1;
      while(fgets(buffer, BUFFER_SIZE, testFile) != NULL){
@@ -48,6 +47,8 @@ int main(){
     }
     fclose(testFile);
     }
+
+      
     //Generar Pila de Permutaciones
     m=i-1;n=aux_c-1; //ultimo ciclo quedó en width &lenght +1 por el ciclo while asi que resto -1
     int Random[j],arreglo[m][n];
@@ -80,15 +81,29 @@ int main(){
             for (j=1; j<=n; j++) {
                 jb=j+1;
                 x=arreglo[i][j];
-                y=arreglo[i][jb];
-                sumacol+=TSPInteger[x][y];
+                if(jb>n){
+                    y=arreglo[i][1];
                 }
+                else{
+                y=arreglo[i][jb];
+                }
+                sumacol+=TSPInteger[x][y];
+                //printf("TSPInteger[%i][%i]: %i: %i \n", x,y,TSPInteger[x][y], sumacol);
+                }
+                //printf("\n");
                 distancia[i][0]=sumacol;//inserto en columna cero las Distancias de las Permutaciones
             }
-    printf("|Dist.|Permutaciones\n");    
-    for (x=1; x<=m; x++){           //Imprimir TSP - Resultados
+    for (i=1; i<=n; i++){           //Imprimir TSP - Resultados
+        for (j=1; j<=n; j++){
+            printf("%i,", TSPInteger[i][j]);
+	    }
+        printf("\n");
+    }  
+
+    printf("\n|Dist.|Permutaciones|\n");    
+    for (x=1; x<=n; x++){           //Imprimir TSP - Resultados
         for (y=0; y<=n; y++){
-            printf(",%i", distancia[x][y]);
+            printf("%i,", distancia[x][y]);
 	    }
         printf("\n");
     }    
