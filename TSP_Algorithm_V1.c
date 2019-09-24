@@ -4,108 +4,142 @@
 
 #include <stdio.h>
 #include <string.h>
-#define BUFFER_SIZE 4096 //sobrado a futuro lectura de 150x150
+#include <time.h>
+#include <stdlib.h>
+#define BUFFER_SIZE 512
 
 int main(){
-    FILE *testFile = fopen("/workdir/swiss42.tsp", "r"); //apuntador al path de instancia
-    char buffer[BUFFER_SIZE]; //buffer de 4096 bits (en caso de instancia de mayor tamaño)
-    char *delim = " "; //apuntador al delimitador(un espacio) para lectura del Token
-    char *Token;  //apuntador del Token que detecta el primer caracter que no es delimitador
-    int i,j,jb,k,x,y,m,n,r,temp,aux_c,count,flag; //variables para recorrer arreglos y backup de info
-    // 1.-almacenar el Token como entero 2.-arreglo con enteros de la instancia nxn
-    int intToken,TSPInteger[150][150]; 
+    FILE *instancia = fopen("C:\\Workdir\\swiss42.tsp", "r"); 
+    char buffer[BUFFER_SIZE]; 
+    char delim[] = " "; 
+    char *Token;
+    long start, end; 
+    int i,j,jb,k,x,y,m,n,r,temp,aux_c,average,sumweigh,size; 
 
-    if(testFile == NULL){
+    int intToken,TSPInteger[150][150];
+    srand(128);
+
+    start = clock();
+
+    if(instancia == NULL){
         printf("Error de Lectura");
     } 
     else {
-    //Recorrer archivo hasta fin de columna del array(\n) después salta la siguiente linea hasta EOF (NULL)
-    i = 1;count=1;
-     while(fgets(buffer, BUFFER_SIZE, testFile) != NULL){
-        if (count == 8){ //Leer a partir de la ĺínea 8 - instancias tienen comentarios hasta esa linea
-        aux_c=j;
-        j = 1;
-        Token = strtok(buffer, delim); //Buscamos el primer Token verificando delimitador (espacio)
-        while(Token != NULL){ //mientras el último token sea diferente de Nullo -->recorremos la linea del txt   
-            if(strcmp(Token,"EOF")==0){ //verificar si el ultimo Token tiene string "EOF"
-                flag = 1;
-            }
-            if (flag!=1){//si es diferente a EOF metemos el Token al arreglo
-                intToken=atoi(Token); //el Token cuyo valor es un string lo convertimos en entero
-                TSPInteger[i][j] = intToken; //insertamos en arreglo el valor del Token como entero
-                //printf("TSPInteger[%i][%i] - %i\n", i, j, TSPInteger[i][j]); //Solo pruebas
-            j++;
-            }
-            Token = strtok(NULL, delim); //Buscamos si el ultimo valor de Token es Null
-        }
+    //Recorrer archivo hasta fin de columna del array(\n) después salta la siguiente linea hasta NULL
+        i = 1;
+        while(fgets(buffer, BUFFER_SIZE, instancia) != NULL){
+            aux_c=j;
+            j = 1;
+            Token = strtok(buffer, delim); 
+            while(Token != NULL){    
+                intToken=atoi(Token);
+                TSPInteger[i][j] = intToken;
+                j++;
+                Token = strtok(NULL, delim);
+                }
         i++;
-        }
-        else
-        {
-            count++;
         }        
     }
-    fclose(testFile);
-    }
-
-      
-    //Generar Pila de Permutaciones
+    fclose(instancia);
+//Generar Pila de Permutaciones
     m=i-1;n=aux_c-1; //ultimo ciclo quedó en width &lenght +1 por el ciclo while asi que resto -1
     int Random[j],arreglo[m][n];
-    for(x=1;x<=m;x++){              // recorrer el arreglo bidimensional en filas
-        for (k = 1; k <= n; k++) {  // llenar arreglo unidimensional
+    for(x=1;x<=m;x++){              
+        for (k = 1; k <= n; k++) {  // llenar
             Random[k] = k;
         }
-        for (k = 1; k <= n; k++) {  // barajar arreglo unidimensional
+        for (k = 1; k <= n; k++) {  // barajar
             r = rand() % n+1;
             temp = Random[k];
             Random[k] = Random[r];
             Random[r] = temp;
         }
         for (y = 1; y <= n; y++) {  // recorrer columnas arreglo unidimensional
-            arreglo[x][y]=Random[y];// insertar en columnas al arreglo bidimensional
+            arreglo[x][y]=Random[y];
         }
     }
-    int distancia[m][n+1];//requiero que sea de una columna más el arreglo de distancia vs pila de permutaciones            
-    for (x=1; x<=m; x++){   //Respaldo Permutaciones en arreglo de Distancias
+    int distancia[m][n+1];  //Inserto Permutaciones en arreglo de Distancias
+    for (x=1; x<=m; x++){ 
         for (y=1; y<=n; y++){
             distancia[x][y]=arreglo[x][y];
 	    }
     }
-    //RECORREMOS PILA DE PERMUTACIONES Y SACAMOS COORDENADAS DE LA INSTANCIA CON SU RESPECTIVA FILA
-    // ADEMÁS DE REALIZAR SUMATORIAS DE DICHAS DISTANCIAS
+//Recorrer Arcos de Permutaciones y realizar sumatoria para el calculo de Distancias (Fitness)
     printf("\n");
     int sumacol;
+    int alive[m][1];
+    memset(alive, 0, sizeof(alive));
     for (i=1; i<=n; i++){
         sumacol=0;
-            for (j=1; j<=n; j++) {
-                jb=j+1;
-                x=arreglo[i][j];
-                if(jb>n){
+        for (j=1; j<=n; j++) {
+            jb=j+1;
+            x=arreglo[i][j];
+            if(jb>n){
                     y=arreglo[i][1];
-                }
-                else{
-                y=arreglo[i][jb];
-                }
-                sumacol+=TSPInteger[x][y];
-                //printf("TSPInteger[%i][%i]: %i: %i \n", x,y,TSPInteger[x][y], sumacol);
-                }
-                //printf("\n");
-                distancia[i][0]=sumacol;//inserto en columna cero las Distancias de las Permutaciones
             }
-    for (i=1; i<=n; i++){           //Imprimir TSP - Resultados
+            else{
+                y=arreglo[i][jb];
+            }
+            sumacol+=TSPInteger[x][y];
+        }
+        distancia[i][0]=sumacol;
+    }
+    size=distancia[1][0];sumweigh=0;
+    for (i=1; i<=n; i++){
+        if(distancia[i][0] < size){ //Calcular la Mínima
+            size=distancia[i][0];
+        }
+    }
+    for (i=1; i<=n; i++){
+        sumweigh+=distancia[i][0];  //Suma de Distancias de Permutaciones.
+    }
+    average=sumweigh / m;
+    for (i=1; i<=m; i++){
+        if (distancia[i][0] < average){
+                alive[i][1]=1;
+        }
+    }
+//Elaborar criterios de reproducción de población - Los más fuertes Torneo Binario
+
+
+
+//Efectuar con Población Viva la eliminación de los pobladores con Fitness Bajo (Hasta el Final).
+ /*   float survivors[m][n + 1];
+    x=0;
+    memset(survivors, 0, sizeof(survivors)); //Limpiar Arreglo con Ceros
+    for (i=1; i<=m; i++){
+            if(distancia[i][0] <= average){
+                x++;
+                for (j=0; j<=n; j++){
+                    survivors[x][j] = distancia[i][j];
+                }
+            }
+    }*/
+//Seccion de Impresion de: Instancia, Permutaciones, Minimo/Promedio, Poblacion Viva.
+    printf("--------------------------------------------------------------------------------------\n");
+    printf("                           Contenido de Instancia\n"); 
+    printf("\n------------------------------------------------------------------------------------\n");
+    for (i=1; i<=m; i++){           //TSP - Contenido Instancia
         for (j=1; j<=n; j++){
             printf("%i,", TSPInteger[i][j]);
 	    }
         printf("\n");
-    }  
-
-    printf("\n|Dist.|Permutaciones|\n");    
-    for (x=1; x<=n; x++){           //Imprimir TSP - Resultados
-        for (y=0; y<=n; y++){
-            printf("%i,", distancia[x][y]);
+    }
+    printf("--------------------------------------------------------------------------------------\n");
+    printf("\n              Primera Columna (Distancias) mas Permutaciones|\n");
+    printf("\n------------------------------------------------------------------------------------\n");
+    for (i=1; i<=m; i++){
+        printf("%i , ", alive[i][1]);
+        for (j=0; j<=n; j++){
+            printf("%i, ",distancia[i][j]);
 	    }
         printf("\n");
-    }    
-    return 0;
+    }
+    printf("\n------------------------------------------------------------------------------------\n");
+    printf("             Distancia Minima: [%i] & Promedio: [%i]\n", size, average); //TSP - Minimos y Fitness
+    printf("\n------------------------------------------------------------------------------------\n");
+   
+    end = clock();
+    printf("Total Time: %f\n",((end-start))/CLOCKS_PER_SEC);
+    system("pause");
 }
