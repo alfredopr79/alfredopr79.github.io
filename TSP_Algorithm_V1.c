@@ -9,41 +9,41 @@
 #define BUFFER_SIZE 512
 
 int main(){
-    FILE *instancia = fopen("C:\\Workdir\\swiss42.tsp", "r"); 
+    FILE *archivo = fopen("C:\\Workdir\\swiss42.tsp", "r"); 
     char buffer[BUFFER_SIZE]; 
     char delim[] = " "; 
     char *Token;
     long start, end; 
     int i,j,jb,k,x,y,m,n,r,temp,aux_c,average,sumweigh,size; 
 
-    int intToken,TSPInteger[150][150];
+    int intToken,instancia[150][150];
     srand(128);
 
     start = clock();
 
-    if(instancia == NULL){
+    if(archivo == NULL){
         printf("Error de Lectura");
     } 
     else {
     //Recorrer archivo hasta fin de columna del array(\n) después salta la siguiente linea hasta NULL
         i = 1;
-        while(fgets(buffer, BUFFER_SIZE, instancia) != NULL){
+        while(fgets(buffer, BUFFER_SIZE, archivo) != NULL){
             aux_c=j;
             j = 1;
             Token = strtok(buffer, delim); 
             while(Token != NULL){    
                 intToken=atoi(Token);
-                TSPInteger[i][j] = intToken;
+                instancia[i][j] = intToken;
                 j++;
                 Token = strtok(NULL, delim);
                 }
         i++;
         }        
     }
-    fclose(instancia);
+    fclose(archivo);
 //Generar Pila de Permutaciones
     m=i-1;n=aux_c-1; //ultimo ciclo quedó en width &lenght +1 por el ciclo while asi que resto -1
-    int Random[j],arreglo[m][n];
+    int Random[j],poblacion[m][n];
     for(x=1;x<=m;x++){              
         for (k = 1; k <= n; k++) {  // llenar
             Random[k] = k;
@@ -54,33 +54,31 @@ int main(){
             Random[k] = Random[r];
             Random[r] = temp;
         }
-        for (y = 1; y <= n; y++) {  // recorrer columnas arreglo unidimensional
-            arreglo[x][y]=Random[y];
+        for (y = 1; y <= n; y++) {  // recorrer columnas poblacion unidimensional
+            poblacion[x][y]=Random[y];
         }
     }
-    int distancia[m][n+1];  //Inserto Permutaciones en arreglo de Distancias
-    for (x=1; x<=m; x++){ 
-        for (y=1; y<=n; y++){
-            distancia[x][y]=arreglo[x][y];
-	    }
-    }
+    
 //Recorrer Arcos de Permutaciones y realizar sumatoria para el calculo de Distancias (Fitness)
     printf("\n");
+    
     int sumacol;
     int alive[m][1];
-    memset(alive, 0, sizeof(alive));
+    int distancia[m][1];
+    memset(alive, 0, sizeof(alive)); //inicializo con ceros
+
     for (i=1; i<=n; i++){
         sumacol=0;
         for (j=1; j<=n; j++) {
             jb=j+1;
-            x=arreglo[i][j];
+            x=poblacion[i][j];
             if(jb>n){
-                    y=arreglo[i][1];
+                    y=poblacion[i][1];
             }
             else{
-                y=arreglo[i][jb];
+                y=poblacion[i][jb];
             }
-            sumacol+=TSPInteger[x][y];
+            sumacol+=instancia[x][y];
         }
         distancia[i][0]=sumacol;
     }
@@ -106,7 +104,7 @@ int main(){
 //Efectuar con Población Viva la eliminación de los pobladores con Fitness Bajo (Hasta el Final).
  /*   float survivors[m][n + 1];
     x=0;
-    memset(survivors, 0, sizeof(survivors)); //Limpiar Arreglo con Ceros
+    memset(survivors, 0, sizeof(survivors)); //Limpiar poblacion con Ceros
     for (i=1; i<=m; i++){
             if(distancia[i][0] <= average){
                 x++;
@@ -115,30 +113,27 @@ int main(){
                 }
             }
     }*/
-//Seccion de Impresion de: Instancia, Permutaciones, Minimo/Promedio, Poblacion Viva.
+//Seccion de Impresion de: archivo, Permutaciones, Minimo/Promedio, Poblacion Viva.
     printf("--------------------------------------------------------------------------------------\n");
-    printf("                           Contenido de Instancia\n"); 
+    printf("                           Contenido de archivo\n"); 
     printf("\n------------------------------------------------------------------------------------\n");
-    for (i=1; i<=m; i++){           //TSP - Contenido Instancia
+    for (i=1; i<=m; i++){           //TSP - Contenido archivo
         for (j=1; j<=n; j++){
-            printf("%i,", TSPInteger[i][j]);
+            printf("%i,", instancia[i][j]);
 	    }
         printf("\n");
     }
-    printf("--------------------------------------------------------------------------------------\n");
-    printf("\n              Primera Columna (Distancias) mas Permutaciones|\n");
-    printf("\n------------------------------------------------------------------------------------\n");
+    printf("--------------------------------------------------------------------------------------------\n");
+    printf("\n Col1 (Vivos), Col2 (Peso) mas Permutaciones || Distancia Minima: [%i] & Promedio: [%i]\n", size, average);
+    printf("\n------------------------------------------------------------------------------------------\n");
     for (i=1; i<=m; i++){
         printf("%i , ", alive[i][1]);
-        for (j=0; j<=n; j++){
-            printf("%i, ",distancia[i][j]);
+        printf("%i , ", distancia[i][0]);
+        for (j=1; j<=n; j++){
+            printf("%i, ",poblacion[i][j]);
 	    }
         printf("\n");
-    }
-    printf("\n------------------------------------------------------------------------------------\n");
-    printf("             Distancia Minima: [%i] & Promedio: [%i]\n", size, average); //TSP - Minimos y Fitness
-    printf("\n------------------------------------------------------------------------------------\n");
-   
+    }   
     end = clock();
     printf("Total Time: %f\n",((end-start))/CLOCKS_PER_SEC);
     system("pause");
