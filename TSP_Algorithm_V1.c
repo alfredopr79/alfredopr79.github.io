@@ -14,9 +14,10 @@ int main(){
     char delim[] = " "; 
     char *Token;
     long start, end; 
-    int i,j,jb,k,x,y,m,n,r,temp,aux_c,average,sumweigh,size; 
-
+    int i,j,jb,k,x,y,m,n,r,temp,aux_c,average,sumweigh,size,padre1,padre2,hijo,cont,ITER_SIN_MEJORA;
     int intToken,instancia[150][150];
+    const int MAX_ITER_SIN_MEJORA = 10;
+
     srand(128);
 
     start = clock();
@@ -41,6 +42,7 @@ int main(){
         }        
     }
     fclose(archivo);
+
 //Generar Pila de Permutaciones
     m=i-1;n=aux_c-1; //ultimo ciclo quedó en width &lenght +1 por el ciclo while asi que resto -1
     int Random[j],poblacion[m][n];
@@ -66,7 +68,7 @@ int main(){
     int alive[m][1];
     int distancia[m][1];
     memset(alive, 0, sizeof(alive)); //inicializo con ceros
-
+  
     for (i=1; i<=n; i++){
         sumacol=0;
         for (j=1; j<=n; j++) {
@@ -97,22 +99,26 @@ int main(){
                 alive[i][1]=1;
         }
     }
-//Elaborar criterios de reproducción de población - Los más fuertes Torneo Binario
-
-
-
-//Efectuar con Población Viva la eliminación de los pobladores con Fitness Bajo (Hasta el Final).
- /*   float survivors[m][n + 1];
-    x=0;
-    memset(survivors, 0, sizeof(survivors)); //Limpiar poblacion con Ceros
-    for (i=1; i<=m; i++){
-            if(distancia[i][0] <= average){
-                x++;
-                for (j=0; j<=n; j++){
-                    survivors[x][j] = distancia[i][j];
+//Detección de Hijos Muertos y Selección de Padres - Los más fuertes Torneo Binario
+    ITER_SIN_MEJORA=0;
+    do{
+        ITER_SIN_MEJORA++;
+        for (i = 1; i <= n; i++){   //Recorrer Población
+                if (alive[i][0] == 0){ //Encontrar un muerto
+                    hijo = i;
+                    do{             //Busco padres
+                        padre1 = rand() % n+1;
+                    }while(alive[padre1][0] == 0);
+                    cont = 0;
+                    do{
+                        padre2 = rand() % n+1;
+                        cont++;
+                    }while((alive[padre2][0] == 0 || padre1 == padre2) && (cont < n/2));
+//Cruza de Padre1 y Padre2, el resultante sustituye al hijo seleccionado si Peso es mejor que el muerto
                 }
-            }
-    }*/
+        }
+    }while(ITER_SIN_MEJORA < MAX_ITER_SIN_MEJORA);
+
 //Seccion de Impresion de: archivo, Permutaciones, Minimo/Promedio, Poblacion Viva.
     printf("--------------------------------------------------------------------------------------\n");
     printf("                           Contenido de archivo\n"); 
