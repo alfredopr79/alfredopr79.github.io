@@ -176,19 +176,19 @@ int main(int args,char** arg){
 void Grasp(int i){
     int x, max,min,j,limit,cont,ran;
     
-    for (x = 0; x < n;x++){
+    for (x = 0; x < n;x++){ //List Candidate Array set to One
         lc[x] = 1;
     }
 
-    sol[0] = rand()%n;
-    lc[sol[0]] = 0;
+    sol[0] = rand()%n; //First Row of instance selected randomly
+    lc[sol[0]] = 0; //And... Yes of course first Array Position Candidate set to 0
 
-    for (x = 0; x < n-1; x++){  //Ciclo para construir la solución
+    for (x = 0; x < n-1; x++){  //Build Solution
         max = -1;
         min = 0x7FFFFFFF;
-        for (j = 0; j < n;j++){ //Recorrido para buscar el min y max
+        for (j = 0; j < n;j++){ //Find min and max distance/cost value in row instance
             if (lc[j] == 1)
-            {//Está en la lista de candidatos
+            {//Compare all data in row instance
                 if (max < instance[sol[x]][j]){
                     max = instance[sol[x]][j];
                 }
@@ -197,28 +197,28 @@ void Grasp(int i){
                 }
             }
         }
-        limit = min + alpha * (max-min);
+        limit = min + alpha * (max-min);//Calculate Limit
         cont = 0;
-        for (j = 0; j < n; j++){
+        for (j = 0; j < n; j++){//Generate Restricted Candidate List
             lrc[j] = 0;
             if (lc[j] == 1 && instance[sol[x]][j] <= limit){
                 lrc[j] = 1;
                 cont++;
             }
         }
-        ran = rand()%cont + 1;
+        ran = rand()%cont + 1;//This code is to insert not repeated value in Array Solution
         for (j = 0; j < n; j++){
             ran = ran - lrc[j];
             if (ran == 0){
                 break;
             }
         }
-        sol[x+1] = j;
-        lc[j] = 0;
+        sol[x+1] = j;//insert next grasp solution value
+        lc[j] = 0;//and mark with zero
         
     }
 
-    for (j = 0; j < n; j++){    //Insert Grasp Solution
+    for (j = 0; j < n; j++){    //And finally Insert Grasp Solution
         population[i][j] = sol[j];
     }
 }
