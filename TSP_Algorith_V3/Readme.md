@@ -2,4 +2,4 @@ Problem: Traveling Salesman Problem
 
 Algorithms:
 
-Genetic, Mutation, LocalSearch, Binary Tournament.
+Genetic, Mutation, LocalSearch, Binary Tournament
