@@ -1,3 +1,5 @@
-Metaheuristic: Simulated Annealing Algorithm
-
 Problem: Travelling Salesman Problem
+
+Algorithm:
+
+Simulated Annealing
