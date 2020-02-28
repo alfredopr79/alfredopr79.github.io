@@ -4,6 +4,7 @@
 //Alfredo Peña Ramos /PHD Student
 
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 #include <stdlib.h>
 #include <math.h>
@@ -15,7 +16,7 @@ int* alive;
 int** population;
 int** instance;
 int *selectedPos,*selectedElement;
-int PopulationSize=100;
+int PopulationSize=50;
 
 int** DynamicMemory2D(int n, int m);
 int CalculateFitness(int i);
@@ -24,15 +25,12 @@ void SimAnnealing(int i);
 
 int main(int args,char** arg){
     //put files in same code directory, if you want to add more instances to evaluate just modify array
-    char files[1][25] = {"bavaria29.tsp"};
+    char files[1][25] = {"swiss42.tsp"};
     for (int list = 0; list < 1; list++){
 
         FILE *file = fopen(files[list], "r");
         long start, end; 
         int i,j,temp;
-        int BestFit,iterNoImprovement;
-        
-        const int MAX_ITER_NO_IMPROVEMENT = 10;
         
         //Change it, if you want permanent Permutations Values
         //srand(128);
@@ -74,14 +72,13 @@ int main(int args,char** arg){
             }
 
     //Print Simulated Annealing Algorithm       
-    for (i = 0; i < PopulationSize; i++){
-        printf("Fitness: %i\n",Fitness[i]);
+  
+        printf("Fitness: %i\n",Fitness[indexBestSol]);
         printf("Solution: ");
         for (j = 0; j < n-1; j++){
-            printf("%i, ",population[i][j]);
+            printf("%i, ",population[indexBestSol][j]);
         }
-        printf("%i\n",population[i][j]);
-        }
+        printf("%i\n",population[indexBestSol][j]);
 
         end = clock();
         double time = end - start;
@@ -124,10 +121,10 @@ int CalculateFitness(int i){
 //Simulated Annealing Algorithm
 void SimAnnealing(int i){
     int j, Lold, Lnew, temp;
-    double alpha = 0.7, T;
+    double alpha = 0.5, T;
 
     for(j = 2; j < n-2;j++){
-        for(T = 999999; T > 0.004456318; T *= alpha){
+        for(T = 999999; T > 0.0037252866; T *= alpha){
 
             Lold =  instance[population[i][j-2]][population[i][j-1]];
             Lold +=  instance[population[i][j-1]][population[i][j]];
