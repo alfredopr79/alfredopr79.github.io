@@ -2,4 +2,4 @@ Problem: Travelling Salesman Problem
 
 Algorithm:
 
-Simulated Annealing
+Simulated Annealing.
