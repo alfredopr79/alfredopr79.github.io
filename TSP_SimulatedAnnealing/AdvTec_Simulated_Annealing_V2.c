@@ -16,7 +16,7 @@ int* alive;
 int** population;
 int** instance;
 int *selectedPos,*selectedElement;
-int PopulationSize=50;
+double PopulationSize=100;
 
 int** DynamicMemory2D(int n, int m);
 int CalculateFitness(int i);
@@ -33,7 +33,7 @@ int main(int args,char** arg){
         int i,j,temp;
         
         //Change it, if you want permanent Permutations Values
-        //srand(128);
+        srand(128);
 
         if(file == NULL){
             printf("Read Error");
@@ -121,10 +121,11 @@ int CalculateFitness(int i){
 //Simulated Annealing Algorithm
 void SimAnnealing(int i){
     int j, Lold, Lnew, temp;
-    double alpha = 0.5, T;
+    double alpha = n / PopulationSize, T;
 
-    for(j = 2; j < n-2;j++){
-        for(T = 999999; T > 0.0037252866; T *= alpha){
+    for(T = n; T > 0;){
+        for(j = 2; j < n-2;j++){
+            T = T - alpha;
 
             Lold =  instance[population[i][j-2]][population[i][j-1]];
             Lold +=  instance[population[i][j-1]][population[i][j]];
