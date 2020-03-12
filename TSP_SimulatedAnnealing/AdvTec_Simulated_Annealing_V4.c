@@ -1,4 +1,4 @@
-/*Traveling Salesman Problem + Simulated*/
+/*Traveling Salesman Problem Simulated Annealing*/
 //Instance Sources: http://elib.zib.de/pub/mp-testdata/tsp/tsplib/tsp/index.html
 //Profile: http://linkedin.com/in/alfredopea
 //Alfredo Peña Ramos /PHD Student
