@@ -1,0 +1,27 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "g++ build active file",
+            "type": "shell",
+            "command": "/usr/bin/g++", // Adjust if g++ is in a different location
+            "args": [
+                "-g", // Enables debugging symbols
+                "${file}", // The active file being compiled
+                "-o", // Specifies the output file
+                "${fileDirname}/${fileBasenameNoExtension}" // Output path and name (e.g., project_folder/main)
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Compiler: /usr/bin/g++"
+        }
+    ]
+}
